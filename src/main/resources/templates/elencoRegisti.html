@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Elenco Registi - Gestione Festival</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <!-- Barra di Navigazione -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+        <div class="container">
+            <a class="navbar-brand" href="/">Gestione Festival</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/festival">Elenco Festival</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/film">Elenco Film</a></li>
+                    <!-- Pagina attiva -->
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="/regista">Elenco
+                            Registi</a></li>
+                </ul>
+                <div class="d-flex">
+                    <div sec:authorize="!isAuthenticated()">
+                        <a href="/login" class="btn btn-outline-light">Accedi</a>
+                    </div>
+                    <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
+                        <span class="text-light me-3">Benvenuto, <strong
+                                sec:authentication="name">Utente</strong></span>
+                        <form th:action="@{/logout}" method="post" class="m-0">
+                            <button type="submit" class="btn btn-danger btn-sm">Esci</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenuto Principale -->
+    <div class="container mb-5">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <h1 class="display-6 fw-bold">I Nostri Registi</h1>
+            <a href="/" class="btn btn-outline-secondary btn-sm">← Torna alla Home</a>
+        </div>
+
+        <!-- Messaggio se non ci sono registi -->
+        <div th:if="${elencoRegisti.isEmpty()}" class="alert alert-info text-center shadow-sm" role="alert">
+            Al momento non ci sono registi nel sistema.
+        </div>
+
+        <!-- Griglia dei Registi -->
+        <div th:unless="${elencoRegisti.isEmpty()}" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+
+            <div class="col" th:each="regista : ${elencoRegisti}">
+                <!-- Card del singolo regista -->
+                <div class="card h-100 shadow-sm border-0 bg-white">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <!-- Icona stilizzata per il regista -->
+                        <div class="mb-3">
+                            <span class="badge bg-secondary rounded-circle p-3 fs-4">🎬</span>
+                        </div>
+
+                        <h5 class="card-title fw-bold mb-3" th:text="${regista.nome} + ' ' + ${regista.cognome}">Nome
+                            Cognome</h5>
+
+                        <!-- Bottone Dettagli -->
+                        <div class="mt-auto">
+                            <a th:href="@{'/regista/' + ${regista.id}}" class="btn btn-dark w-100 rounded-pill">Vedi
+                                Dettagli</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

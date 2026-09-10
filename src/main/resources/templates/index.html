@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestione Festival - Home</title>
+    <!-- Inclusione di Bootstrap 5 per un design professionale -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <!-- Barra di Navigazione (Navbar) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+        <div class="container">
+            <a class="navbar-brand" href="/">Gestione Festival</a>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/festival">Elenco Festival</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/film">Elenco Film</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/regista">Elenco Registi</a></li>
+                </ul>
+
+                <!-- Sezione Destra della Navbar (Login/Logout) -->
+                <div class="d-flex">
+                    <!-- Visibile solo se NON sei loggato -->
+                    <div sec:authorize="!isAuthenticated()">
+                        <a href="/login" class="btn btn-outline-light">Accedi</a>
+                    </div>
+
+                    <!-- Visibile solo se SEI loggato -->
+                    <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
+                        <span class="text-light me-3">Benvenuto, <strong
+                                sec:authentication="name">Utente</strong></span>
+                        <form th:action="@{/logout}" method="post" class="m-0">
+                            <button type="submit" class="btn btn-danger btn-sm">Esci</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenuto Principale -->
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold">Sistema Informativo Cinematografico</h1>
+            <p class="lead text-muted">Esplora i festival, scopri i film in programma e leggi le recensioni degli
+                utenti.</p>
+        </div>
+
+        <!-- Sezione Amministratore (Mostrata come griglia di Card) -->
+        <div sec:authorize="hasAuthority('ADMIN')" class="mt-5">
+            <h3 class="mb-4 border-bottom pb-2">Pannello di Controllo Amministratore</h3>
+
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Festival</h5>
+                            <a href="/admin/festival/nuovo" class="btn btn-primary mt-2">Nuovo Festival</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Film</h5>
+                            <a href="/admin/film/nuovo" class="btn btn-primary mt-2">Nuovo Film</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Registi</h5>
+                            <a href="/admin/regista/nuovo" class="btn btn-primary mt-2">Nuovo Regista</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm border-primary">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-primary">Proiezioni</h5>
+                            <a href="/admin/sala/nuova" class="btn btn-outline-primary mt-2 btn-sm">Nuova Sala</a>
+                            <a href="/admin/proiezione/nuova" class="btn btn-primary mt-2 btn-sm">Programma</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Scrivi Recensione</title>
+</head>
+
+<body>
+    <!-- Mostriamo all'utente per quale film sta scrivendo la recensione -->
+    <h1>Recensione per: <span th:text="${film.titolo}">Titolo Film</span></h1>
+
+    <!-- Il form invia i dati tramite POST allo stesso URL -->
+    <form th:action="@{'/utente/recensione/nuova/' + ${film.id}}" th:object="${recensione}" method="post">
+
+        <div>
+            <label>Voto (da 1 a 5):</label><br>
+            <!-- L'utente sceglie un voto -->
+            <input type="number" th:field="*{voto}" min="1" max="5" required />
+        </div>
+        <br>
+
+        <div>
+            <label>Testo della recensione:</label><br>
+            <!-- L'utente scrive il testo -->
+            <textarea th:field="*{testo}" rows="5" cols="40" required
+                placeholder="Cosa ne pensi di questo film?"></textarea>
+        </div>
+        <br>
+
+        <button type="submit">✍️ Pubblica Recensione</button>
+    </form>
+
+    <hr>
+    <!-- Pulsante per tornare indietro se l'utente cambia idea -->
+    <a th:href="@{'/film/' + ${film.id}}">❌ Annulla e torna al film</a>
+
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Catalogo Film - Gestione Festival</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <!-- Barra di Navigazione (Identica alla Home) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+        <div class="container">
+            <a class="navbar-brand" href="/">Gestione Festival</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/festival">Elenco Festival</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="/film">Elenco Film</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/regista">Elenco Registi</a></li>
+                </ul>
+                <div class="d-flex">
+                    <div sec:authorize="!isAuthenticated()">
+                        <a href="/login" class="btn btn-outline-light">Accedi</a>
+                    </div>
+                    <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
+                        <span class="text-light me-3">Benvenuto, <strong
+                                sec:authentication="name">Utente</strong></span>
+                        <form th:action="@{/logout}" method="post" class="m-0">
+                            <button type="submit" class="btn btn-danger btn-sm">Esci</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenuto Principale -->
+    <div class="container mb-5">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <h1 class="display-6 fw-bold">Catalogo Film</h1>
+            <a href="/" class="btn btn-outline-secondary btn-sm">← Torna alla Home</a>
+        </div>
+
+        <!-- Messaggio se non ci sono film -->
+        <div th:if="${films.isEmpty()}" class="alert alert-info text-center" role="alert">
+            Nessun film presente al momento nel catalogo. Torna più tardi!
+        </div>
+
+        <!-- Griglia dei Film (Mostrata solo se ci sono film) -->
+        <div th:if="${!films.isEmpty()}" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+
+            <div class="col" th:each="film : ${films}">
+                <div class="card h-100 shadow-sm border-0">
+
+                    <img th:if="${film.urlImmagine != null and !film.urlImmagine.isEmpty()}"
+                        th:src="${film.urlImmagine}" class="card-img-top" alt="Locandina"
+                        style="height: 350px; object-fit: cover;">
+
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <h5 class="card-title fw-bold mb-1" th:text="${film.titolo}">Titolo Film</h5>
+                        <p class="card-text text-muted mb-3" th:text="'Anno: ' + ${film.anno}">Anno</p>
+
+                        <!-- Bottone Dettagli stilizzato -->
+                        <div class="mt-auto">
+                            <a th:href="@{'/film/' + ${film.id}}" class="btn btn-primary w-100 rounded-pill">Mostra
+                                Dettagli</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
