@@ -37,10 +37,8 @@
             <div class="col-md-8 col-lg-7">
 
                 <div class="card shadow-sm border-0">
-
-                    <!-- Intestazione del Form -->
-                    <div class="card-header bg-danger text-white pt-4 pb-3 border-0">
-                        <h4 class="mb-0 text-center fw-bold">🎬 Programma una Proiezione</h4>
+                    <div class="card-header bg-primary text-white pt-4 pb-3 border-0">
+                        <h4 class="mb-0 text-center fw-bold">📅 Programma una Proiezione</h4>
                     </div>
 
                     <div class="card-body p-4 p-md-5">
@@ -51,22 +49,33 @@
                             <!-- Selezione Festival -->
                             <div class="mb-4">
                                 <label for="festival" class="form-label fw-bold text-secondary">Festival</label>
-                                <select id="festival" th:field="*{festival}" class="form-select form-select-lg"
-                                    required>
+                                <select id="festival" th:field="*{festival}" class="form-select form-select-lg" required>
                                     <option value="">-- Seleziona un Festival --</option>
                                     <option th:each="f : ${festivals}" th:value="${f.id}"
                                         th:text="${f.nome} + ' (' + ${f.anno} + ')'"></option>
                                 </select>
+                                <div th:if="${#fields.hasErrors('festival')}" th:errors="*{festival}" class="text-danger small mt-2 fw-semibold">Errore festival</div>
                             </div>
 
-                            <!-- Selezione Film -->
+                            <!-- 🛠️ MAGAZZINO NASCOSTO: Contiene tutti i film taggati col loro festival -->
+                            <div id="magazzino-film" style="display: none;">
+                                <th:block th:each="f : ${festivals}">
+                                    <option th:each="film : ${f.filmPartecipanti}" 
+                                            th:value="${film.id}" 
+                                            th:text="${film.titolo}"
+                                            th:attr="data-festival-id=${f.id}">
+                                    </option>
+                                </th:block>
+                            </div>
+
+                            <!-- Selezione Film (Dinamicamente popolata da JS) -->
                             <div class="mb-4">
                                 <label for="film" class="form-label fw-bold text-secondary">Film da proiettare</label>
-                                <select id="film" th:field="*{film}" class="form-select form-select-lg" required>
-                                    <option value="">-- Seleziona un Film --</option>
-                                    <option th:each="film : ${films}" th:value="${film.id}" th:text="${film.titolo}">
-                                    </option>
+                                <!-- Parte bloccato e vuoto (disabled). Ci pensa JS a sbloccarlo -->
+                                <select id="film" th:field="*{film}" class="form-select form-select-lg" required disabled>
+                                    <option value="">-- Prima seleziona un Festival --</option>
                                 </select>
+                                <div th:if="${#fields.hasErrors('film')}" th:errors="*{film}" class="text-danger small mt-2 fw-semibold">Errore film</div>
                             </div>
 
                             <!-- Selezione Sala -->
@@ -77,33 +86,25 @@
                                     <option th:each="s : ${sale}" th:value="${s.id}"
                                         th:text="${s.nome} + ' (Capienza: ' + ${s.capienza} + ')'"></option>
                                 </select>
+                                <div th:if="${#fields.hasErrors('sala')}" th:errors="*{sala}" class="text-danger small mt-2 fw-semibold">Errore sala</div>
                             </div>
 
-                            <!-- Data e Ora affiancate -->
+                            <!-- Data e Ora -->
                             <div class="row mb-5">
                                 <div class="col-md-6 mb-4 mb-md-0">
-                                    <label for="data" class="form-label fw-bold text-secondary">Data della
-                                        Proiezione</label>
-                                    <input type="date" id="data" class="form-control form-control-lg text-muted"
-                                        th:field="*{data}" required>
-                                    <div th:if="${#fields.hasErrors('data')}" th:errors="*{data}"
-                                        class="text-danger small mt-2 fw-semibold">Errore data</div>
+                                    <label for="data" class="form-label fw-bold text-secondary">Data</label>
+                                    <input type="date" id="data" class="form-control form-control-lg text-muted" th:field="*{data}" required>
                                 </div>
-
                                 <div class="col-md-6">
-                                    <label for="ora" class="form-label fw-bold text-secondary">Ora di Inizio</label>
-                                    <input type="time" id="ora" class="form-control form-control-lg text-muted"
-                                        th:field="*{ora}" required>
-                                    <div th:if="${#fields.hasErrors('ora')}" th:errors="*{ora}"
-                                        class="text-danger small mt-2 fw-semibold">Errore ora</div>
+                                    <label for="ora" class="form-label fw-bold text-secondary">Ora</label>
+                                    <input type="time" id="ora" class="form-control form-control-lg text-muted" th:field="*{ora}" required>
                                 </div>
                             </div>
 
-                            <!-- Bottoni d'Azione -->
+                            <!-- Bottoni -->
                             <div class="d-grid gap-3">
-                                <button type="submit" class="btn btn-danger btn-lg fw-bold">🎬 Conferma
-                                    Programmazione</button>
-                                <a href="/" class="btn btn-outline-secondary">Annulla e Torna alla Home</a>
+                                <button type="submit" class="btn btn-primary btn-lg fw-bold">✅ Conferma Programmazione</button>
+                                <a href="/festival" class="btn btn-outline-secondary">❌ Annulla e torna ai Festival</a>
                             </div>
 
                         </form>
@@ -115,7 +116,57 @@
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 🪄 SCRIPT MAGICO PER FILTRARE I FILM -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const festivalSelect = document.getElementById("festival");
+            const filmSelect = document.getElementById("film");
+            const magazzinoFilm = document.getElementById("magazzino-film").children;
+
+            // Conserviamo in memoria l'ID del film se stiamo ricaricando la pagina (es. per un errore)
+            const filmPreselezionato = filmSelect.getAttribute("value"); 
+
+            function aggiornaFilm() {
+                const idFestival = festivalSelect.value;
+                
+                // 1. Pulizia: resettiamo il menù Film lasciando solo la voce di default
+                filmSelect.innerHTML = '<option value="">-- Seleziona un Film --</option>';
+
+                // 2. Controllo: se non hai scelto un festival, il campo film resta disabilitato
+                if (!idFestival) {
+                    filmSelect.disabled = true;
+                    return;
+                }
+
+                // 3. Azione: hai scelto un festival! Sblocchiamo il menù
+                filmSelect.disabled = false;
+
+                // 4. Filtro: peschiamo dal magazzino solo i film che hanno data-festival-id uguale al festival scelto
+                Array.from(magazzinoFilm).forEach(opt => {
+                    if (opt.getAttribute("data-festival-id") === idFestival) {
+                        const nuovaOpzione = opt.cloneNode(true);
+                        
+                        // Se c'era un errore e il form si ricarica, prova a riselezionare il film che avevi cliccato
+                        if (filmPreselezionato && nuovaOpzione.value === filmPreselezionato) {
+                            nuovaOpzione.selected = true;
+                        }
+                        
+                        filmSelect.appendChild(nuovaOpzione);
+                    }
+                });
+            }
+
+            // Ascolta quando l'utente cambia festival e avvia la funzione
+            festivalSelect.addEventListener("change", aggiornaFilm);
+
+            // Avviamo la funzione anche appena la pagina si apre 
+            // (fondamentale se stai modificando o se c'è stato un errore nel form)
+            aggiornaFilm();
+        });
+    </script>
 </body>
 
 </html>

@@ -14,3 +14,5 @@ INSERT INTO regista (id, nome, cognome) VALUES (nextval('regista_seq'), 'Leitch'
 INSERT INTO film (id, titolo, anno, durata, genere, paese_produzione, regista_id, url_immagine) VALUES (nextval('film_seq'), 'Deadpool 2', 2018, 119, 'Supereroi', 'USA', currval('regista_seq'), 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSz5kvR1P6vHKsCCfmhwpR3cfTGo9OqRrmqojkxOsQWYw&s=10');
 
 INSERT INTO film (id, titolo, anno, durata, genere, paese_produzione, regista_id, url_immagine) VALUES (nextval('film_seq'), 'Interstellar', 2014, 169, 'Fantascienza', 'USA', (SELECT id FROM regista WHERE nome = 'Christopher' AND cognome = 'Nolan' LIMIT 1), 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4qy4v9p6Uf5GWrRjQaV1BYrKlD7jPYdufQ859sGhX0w&s=10');
+
+INSERT INTO utente (id, username, password, ruolo) VALUES (nextval('utente_seq'), 'ale', '{noop}user', 'USER');

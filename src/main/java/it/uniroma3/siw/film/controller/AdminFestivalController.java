@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.uniroma3.siw.film.model.Festival;
 import it.uniroma3.siw.film.model.Film;
@@ -50,15 +52,6 @@ public class AdminFestivalController {
         return "admin/addFilmToFestival";
     }
 
-    @PostMapping("/{idFestival}/aggiungiFilm")
-    public String salvaFilmNelFestival(@PathVariable("idFestival") Long idFestival, @org.springframework.web.bind.annotation.RequestParam("filmId") Long idFilm) {
-            
-        it.uniroma3.siw.film.model.Film film = filmService.findFilmById(idFilm);
-            
-        festivalService.aggiungiFilmAlFestival(idFestival, film);
-            
-        return "redirect:/festival/" + idFestival; 
-    }
 
     @GetMapping("/modifica/{id}")
     public String formModificaFestival(@PathVariable("id") Long id, Model model) {
@@ -92,6 +85,23 @@ public class AdminFestivalController {
         festivalService.saveFestival(festival);
         
         // 4. Ritorni alla pagina dei dettagli del festival
+        return "redirect:/festival/" + idFestival; 
+    }
+
+    @PostMapping("/{idFestival}/aggiungiFilm")
+    public String salvaFilmNelFestival(@PathVariable("idFestival") Long idFestival, @RequestParam("filmId") Long idFilm, RedirectAttributes redirectAttributes) {
+            
+        Festival festival = festivalService.findFestivalById(idFestival);
+        Film film = filmService.findFilmById(idFilm);
+            
+        // CONTROLLO: Il film è già nella lista?
+        if (festival.getFilmPartecipanti().contains(film)) {
+            // Opzionale: passa un messaggio di errore alla pagina
+            redirectAttributes.addFlashAttribute("errore", "Questo film è già presente nel festival!");
+            return "redirect:/admin/festival/" + idFestival + "/aggiungiFilm"; 
+        }
+            
+        festivalService.aggiungiFilmAlFestival(idFestival, film);
         return "redirect:/festival/" + idFestival; 
     }
 

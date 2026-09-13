@@ -1,40 +1,88 @@
 <!DOCTYPE html>
-<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <meta charset="UTF-8">
-    <title>Scrivi Recensione</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Scrivi Recensione - Gestione Festival</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
-    <!-- Mostriamo all'utente per quale film sta scrivendo la recensione -->
-    <h1>Recensione per: <span th:text="${film.titolo}">Titolo Film</span></h1>
+<body class="bg-light">
 
-    <!-- Il form invia i dati tramite POST allo stesso URL -->
-    <form th:action="@{'/utente/recensione/nuova/' + ${film.id}}" th:object="${recensione}" method="post">
-
-        <div>
-            <label>Voto (da 1 a 5):</label><br>
-            <!-- L'utente sceglie un voto -->
-            <input type="number" th:field="*{voto}" min="1" max="5" required />
+    <!-- Barra di Navigazione -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
+        <div class="container">
+            <a class="navbar-brand" href="/">Gestione Festival</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/festival">Elenco Festival</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="/film">Elenco Film</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/regista">Elenco Registi</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="text-light me-3">Utente: <strong sec:authentication="name">Utente</strong></span>
+                    <form th:action="@{/logout}" method="post" class="m-0">
+                        <button type="submit" class="btn btn-danger btn-sm">Esci</button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <br>
+    </nav>
 
-        <div>
-            <label>Testo della recensione:</label><br>
-            <!-- L'utente scrive il testo -->
-            <textarea th:field="*{testo}" rows="5" cols="40" required
-                placeholder="Cosa ne pensi di questo film?"></textarea>
+    <!-- Contenuto Principale: Form centrato -->
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+
+                <div class="card shadow-sm border-0">
+
+                    <!-- Intestazione del Form -->
+                    <div class="card-header bg-primary text-white pt-4 pb-3 border-0 text-center">
+                        <h4 class="mb-1 fw-bold">✍️ Scrivi una Recensione</h4>
+                        <p class="mb-0 text-white-50">Stai recensendo: <strong class="text-white" th:text="${film.titolo}">Titolo Film</strong></p>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- FORM -->
+                        <form th:action="@{'/utente/recensione/nuova/' + ${film.id}}" th:object="${recensione}" method="post">
+
+                            <!-- Voto -->
+                            <div class="mb-4">
+                                <label for="voto" class="form-label fw-bold text-secondary">Voto (da 1 a 5) ⭐️</label>
+                                <input type="number" id="voto" th:field="*{voto}" class="form-control form-control-lg" 
+                                       min="1" max="5" required>
+                                <div th:if="${#fields.hasErrors('voto')}" th:errors="*{voto}"
+                                    class="text-danger small mt-2 fw-semibold">Errore voto</div>
+                            </div>
+
+                            <!-- Testo della Recensione -->
+                            <div class="mb-5">
+                                <label for="testo" class="form-label fw-bold text-secondary">Testo della recensione</label>
+                                <textarea id="testo" th:field="*{testo}" class="form-control form-control-lg" 
+                                          rows="5" placeholder="Cosa ne pensi di questo film? Scrivi qui le tue impressioni..." required></textarea>
+                                <div th:if="${#fields.hasErrors('testo')}" th:errors="*{testo}"
+                                    class="text-danger small mt-2 fw-semibold">Errore testo</div>
+                            </div>
+
+                            <!-- Bottoni d'Azione -->
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-primary btn-lg fw-bold">✍️ Pubblica Recensione</button>
+                                <a th:href="@{'/film/' + ${film.id}}" class="btn btn-outline-secondary">❌ Annulla e torna al film</a>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
         </div>
-        <br>
+    </div>
 
-        <button type="submit">✍️ Pubblica Recensione</button>
-    </form>
-
-    <hr>
-    <!-- Pulsante per tornare indietro se l'utente cambia idea -->
-    <a th:href="@{'/film/' + ${film.id}}">❌ Annulla e torna al film</a>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

@@ -55,4 +55,8 @@ public class FilmService {
     public List<Film> findByRegista(Regista regista) {
         return filmRepository.findByRegista(regista);
     }
+
+    public Long contaNum(){
+        return filmRepository.contafilm();
+    }
 }

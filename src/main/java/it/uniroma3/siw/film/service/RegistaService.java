@@ -41,4 +41,8 @@ public class RegistaService {
             registaRepository.save(registaEsistente);
         }
     }
+
+    public Long contaRegisti(){
+        return registaRepository.count();
+    }
 }

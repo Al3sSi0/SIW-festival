@@ -21,6 +21,7 @@ public class RegistaController {
 
     @GetMapping("/regista")
     public String mostraElencoRegisti(Model model) {
+        model.addAttribute("numRegisti", registaService.contaRegisti());
         model.addAttribute("elencoRegisti", registaService.findAllRegisti());
         return "elencoRegisti";
     }
