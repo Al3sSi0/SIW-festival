@@ -5,13 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gestione Festival - Home</title>
-    <!-- Inclusione di Bootstrap 5 per un design professionale -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
 
-    <!-- Barra di Navigazione (Navbar) -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5">
         <div class="container">
             <a class="navbar-brand" href="/">Gestione Festival</a>
@@ -43,21 +41,20 @@
         </div>
     </nav>
 
-    <!-- Contenuto Principale -->
     <div class="container">
 
         <div class="text-center mb-5">
-            <h1 class="display-5 fw-bold">Sistema Informativo Cinematografico</h1>
+            <h1 class="display-5 fw-bold">Festival Manager</h1>
             <p class="lead text-muted">Esplora i festival, scopri i film in programma e leggi le recensioni degli
                 utenti.</p>
         </div>
 
-        <!-- Sezione Amministratore (Mostrata come griglia di Card) -->
         <div sec:authorize="hasAuthority('ADMIN')" class="mt-5">
             <h3 class="mb-4 border-bottom pb-2">Pannello di Controllo Amministratore</h3>
 
-            <div class="row g-4">
-                <div class="col-md-3">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+
+                <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
                             <h5 class="card-title">Festival</h5>
@@ -66,7 +63,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
                             <h5 class="card-title">Film</h5>
@@ -75,7 +72,8 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <!-- 3. Scheda Registi -->
+                <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
                             <h5 class="card-title">Registi</h5>
@@ -84,15 +82,25 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
-                    <div class="card h-100 shadow-sm border-primary">
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
                         <div class="card-body text-center">
-                            <h5 class="card-title text-primary">Proiezioni</h5>
-                            <a href="/admin/sala/nuova" class="btn btn-outline-primary mt-2 btn-sm">Nuova Sala</a>
-                            <a href="/admin/proiezione/nuova" class="btn btn-primary mt-2 btn-sm">Programma</a>
+                            <h5 class="card-title">Sale</h5>
+                            <a href="/admin/sala/nuova" class="btn btn-primary mt-2">Nuova Sala</a>
                         </div>
                     </div>
                 </div>
+
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Proiezioni</h5>
+                            <a href="/admin/proiezione/nuova" class="btn btn-primary mt-2">Nuova
+                                Proiezione</a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
