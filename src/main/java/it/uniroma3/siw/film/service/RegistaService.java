@@ -20,6 +20,10 @@ public class RegistaService {
         return registaRepository.save(regista);
     }
 
+    public boolean esisteRegista(String nome, String cognome) {
+        return registaRepository.existsByNomeAndCognome(nome, cognome);
+    }
+
     @Transactional(readOnly = true)
     public List<Regista> findAllRegisti() {
         return (List<Regista>) registaRepository.findAll();

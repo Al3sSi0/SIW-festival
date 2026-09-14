@@ -19,6 +19,8 @@ public class ProiezioneService {
     @Autowired
     private ProiezioneRepository proiezioneRepository;
 
+
+    @Transactional(readOnly = true)
     public boolean verificaDisponibilitaSala(Sala sala, LocalDate data, LocalTime oraInizio, Integer durataFilmMinuti) {
         LocalTime oraFine = oraInizio.plusMinutes(durataFilmMinuti);
 
@@ -45,6 +47,7 @@ public class ProiezioneService {
         proiezioneRepository.save(proiezione);
     }
 
+    @Transactional(readOnly = true)
     public boolean isSovrapposta(Proiezione nuovaProiezione) {
     List<Proiezione> proiezioniGiorno = proiezioneRepository
         .findBySalaAndData(nuovaProiezione.getSala(), nuovaProiezione.getData());

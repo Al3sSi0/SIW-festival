@@ -31,6 +31,10 @@ public class FilmService {
         return filmRepository.findById(id).orElse(null); 
     }
 
+    public boolean esisteFilm(String titolo, Integer anno) {
+        return filmRepository.existsByTitoloAndAnno(titolo, anno);
+    }
+
 
     @Transactional 
     public void aggiornaFilm(Long id, it.uniroma3.siw.film.model.Film filmConNuoviDati) {

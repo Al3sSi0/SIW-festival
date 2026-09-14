@@ -32,16 +32,20 @@ public class AdminFilmController {
         return "admin/formNewFilm";
     }
 
-    @PostMapping("/nuovo")
-    public String salvaNuovoFilm(@Valid @ModelAttribute("film") Film film, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            
-            model.addAttribute("elencoRegisti", registaService.findAllRegisti());
-            return "admin/formNewFilm";
-        }
-        filmService.saveFilm(film);
-        return "redirect:/"; 
+@PostMapping("/nuovo")
+public String salvaNuovoFilm(@Valid @ModelAttribute("film") Film film, BindingResult bindingResult, Model model) {
+    
+    if (filmService.esisteFilm(film.getTitolo(), film.getAnno())) {
+        bindingResult.rejectValue("titolo", "error.film", "Esiste già un film con questo titolo e anno.");
     }
+
+    if (bindingResult.hasErrors()) {
+        return "admin/formNewFilm";
+    }
+
+    filmService.saveFilm(film);
+    return "redirect:/film"; 
+}
 
     @GetMapping("/modifica/{id}")
     public String formModificaFilm(@PathVariable("id") Long id, Model model) {

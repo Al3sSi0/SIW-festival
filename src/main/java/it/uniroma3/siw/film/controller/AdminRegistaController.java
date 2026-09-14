@@ -27,14 +27,20 @@ public class AdminRegistaController {
         return "admin/formNewRegista";
     }
 
-    @PostMapping("/nuovo")
-    public String salvaNuovoRegista(@Valid @ModelAttribute("regista") Regista regista, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            return "admin/formNewRegista";
-        }
-        registaService.saveRegista(regista);
-        return "redirect:/";
+@PostMapping("/nuovo")
+public String salvaNuovoRegista(@Valid @ModelAttribute("regista") Regista regista, BindingResult bindingResult, Model model) {
+    
+    if (registaService.esisteRegista(regista.getNome(), regista.getCognome())) {
+        bindingResult.rejectValue("nome", "error.regista", "Un regista con questo nome e cognome esiste già.");
     }
+
+    if (bindingResult.hasErrors()) {
+        return "admin/formNewRegista";
+    }
+
+    registaService.saveRegista(regista);
+    return "redirect:/regista"; 
+}
 
     @GetMapping("/modifica/{id}")
     public String formModificaRegista(@PathVariable("id") Long id, Model model) {

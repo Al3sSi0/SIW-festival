@@ -25,20 +25,27 @@ public class RecensioneService {
     @Autowired
     private UtenteRepository utenteRepository;
 
+    @Transactional(readOnly = true)
     public Recensione findById(Long id) {
         return recensioneRepository.findById(id).orElse(null);
     }
 
-    @Transactional
-    public void aggiungiRecensioneAFilm(Recensione recensione, Long filmId, String usernameAutore) {
+@Transactional
+    public boolean aggiungiRecensioneAFilm(Recensione recensione, Long filmId, String usernameAutore) {
         Film film = filmRepository.findById(filmId).orElse(null);
         Utente autore = utenteRepository.findByUsername(usernameAutore).orElse(null);
 
         if (film != null && autore != null) {
+            if (recensioneRepository.existsByAutoreAndFilm(autore, film)) {
+                return false;
+            }
+
             recensione.setFilm(film);
             recensione.setAutore(autore);
             recensioneRepository.save(recensione);
+            return true;
         }
+        return false;
     }
 
     @Transactional(readOnly = true)

@@ -33,17 +33,20 @@ public class AdminFestivalController {
         return "admin/formNewFestival"; 
     }
 
-    @PostMapping("/nuovo")
-    public String salvaNuovoFestival(@Valid @ModelAttribute("festival") Festival festival, BindingResult bindingResult, Model model) {
-        
-        if (bindingResult.hasErrors()) {
-            return "admin/formNewFestival";
-        }
-
-        festivalService.saveFestival(festival);
-        
-        return "redirect:/festival"; 
+@PostMapping("/nuovo")
+public String salvaNuovoFestival(@Valid @ModelAttribute("festival") Festival festival, BindingResult bindingResult, Model model) {
+    
+    if (festivalService.esisteFestival(festival.getNome(),festival.getAnno())) {
+        bindingResult.rejectValue("nome", "error.festival", "Un festival con questo nome esiste già.");
     }
+
+    if (bindingResult.hasErrors()) {
+        return "admin/formNewFestival";
+    }
+
+    festivalService.saveFestival(festival);
+    return "redirect:/festival"; 
+}
 
     @GetMapping("/{id}/aggiungiFilm")
     public String scegliFilmDaAggiungere(@PathVariable("id") Long id, Model model) {

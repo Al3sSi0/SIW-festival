@@ -57,4 +57,8 @@ public class FestivalService {
     public List<Festival> findByFilm(it.uniroma3.siw.film.model.Film film) {
         return festivalRepository.findByFilmPartecipanti(film);
     }
+
+    public boolean esisteFestival(String nome, Integer anno) {
+        return festivalRepository.existsByNomeAndAnno(nome, anno);
+    }
 }
