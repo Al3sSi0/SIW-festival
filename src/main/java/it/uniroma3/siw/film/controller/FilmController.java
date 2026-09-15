@@ -23,7 +23,6 @@ public class FilmController {
 
     @GetMapping("/film")
     public String mostraTuttiIFilm(Model model) {
-        model.addAttribute("numfilm",filmService.contaNum());
         model.addAttribute("films", filmService.findAllFilms());
         return "filmList"; 
     }

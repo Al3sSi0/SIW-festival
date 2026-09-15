@@ -16,6 +16,6 @@ public interface FilmRepository extends CrudRepository<Film, Long> {
 
     boolean existsByTitoloAndAnno(String titolo, Integer anno);
 
-    @Query("select count(f) from Film f")
-    Long contafilm();
+    //@Query("select count(f) from Film f")
+    //Long contafilm();
 }

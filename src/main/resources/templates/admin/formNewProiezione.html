@@ -95,10 +95,15 @@
                                     <label for="data" class="form-label fw-bold text-secondary">Data</label>
                                     <input type="date" id="data" class="form-control form-control-lg text-muted" th:field="*{data}" required>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="ora" class="form-label fw-bold text-secondary">Ora</label>
-                                    <input type="time" id="ora" class="form-control form-control-lg text-muted" th:field="*{ora}" required>
+                            <div class="col-md-6">
+                                <label for="ora" class="form-label fw-bold text-secondary">Ora</label>
+                                <input type="time" id="ora" class="form-control form-control-lg text-muted" th:field="*{ora}" required>
+                                
+                                <!-- ✨ AGGIUNGI QUESTA RIGA: Mostra l'errore intercettato dal tuo Controller! ✨ -->
+                                <div th:if="${#fields.hasErrors('ora')}" th:errors="*{ora}" class="text-danger small mt-2 fw-semibold">
+                                    Errore, Sala occupata in questo orario.
                                 </div>
+                            </div>
                             </div>
 
                             <!-- Bottoni -->

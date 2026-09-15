@@ -97,13 +97,40 @@ public class AdminProiezioneController {
     }
 
     // 3. SALVA LE MODIFICHE
-    @PostMapping("/modifica/{festivalId}/{proiezioneId}")
+@PostMapping("/modifica/{festivalId}/{proiezioneId}")
     public String salvaModificaProiezione(@PathVariable("festivalId") Long festivalId,
                                           @PathVariable("proiezioneId") Long proiezioneId,
-                                          @ModelAttribute("proiezione") Proiezione proiezione) {
+                                          @Valid @ModelAttribute("proiezione") Proiezione proiezioneModificata,
+                                          BindingResult bindingResult,
+                                          Model model) {
         
-        proiezioneService.aggiornaProiezione(proiezioneId, proiezione);
+        // 1. Controllo errori base
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("festivalId", festivalId);
+            return "admin/formModificaProiezione";
+        }
+
+        // 2. Recuperiamo la proiezione originale per sapere Sala e Film (che non sono nel form)
+        Proiezione originale = proiezioneService.findById(proiezioneId);
         
+        // 3. Verifichiamo la sovrapposizione con i NUOVI orari
+        boolean isLibera = proiezioneService.verificaDisponibilitaSala(
+                originale.getSala(), 
+                proiezioneModificata.getData(), 
+                proiezioneModificata.getOra(), 
+                originale.getFilm().getDurata()
+        );
+
+        // NOTA: Se l'admin non ha cambiato data e ora, "verificaDisponibilitaSala" troverà la proiezione stessa! 
+        // Se isLibera è falso, accertiamoci che non stia andando in conflitto con se stessa prima di bloccarlo.
+        if (!isLibera && (!originale.getData().equals(proiezioneModificata.getData()) || !originale.getOra().equals(proiezioneModificata.getOra()))) {
+            bindingResult.rejectValue("ora", "error.proiezione", "ATTENZIONE: La sala è già occupata in questo orario!");
+            model.addAttribute("festivalId", festivalId);
+            return "admin/formModificaProiezione";
+        }
+
+        // 4. Salva!
+        proiezioneService.aggiornaProiezione(proiezioneId, proiezioneModificata);
         return "redirect:/festival/" + festivalId;
     }
 }

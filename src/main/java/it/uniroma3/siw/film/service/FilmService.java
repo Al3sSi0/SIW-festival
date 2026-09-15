@@ -60,7 +60,7 @@ public class FilmService {
         return filmRepository.findByRegista(regista);
     }
 
-    public Long contaNum(){
-        return filmRepository.contafilm();
+    public Long contaFilm(){
+        return filmRepository.count();
     }
 }
